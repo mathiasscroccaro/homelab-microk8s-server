@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: registry-pvc-hdd
+  namespace: container-registry
+spec:
+  storageClassName: external-hdd-hostpath
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 40Gi } }
