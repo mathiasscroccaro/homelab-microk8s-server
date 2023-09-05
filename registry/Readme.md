@@ -28,3 +28,12 @@ kubectl patch deployment.apps/registry -n container-registry -p '{"spec":{"templ
 
 ## How to test the deployed private registry
 
+You can find an example in the folder `./examples`.
+
+1. Edit the value of variable `kubernetes_registry_url`, inside the script `./examples/run.sh`, and then run it. This script might upload a custom nginx docker image to the private registry.
+
+2. The file `/examples/nginx.yaml` is an example of a pod deployment that uses the created image. Edit as you wish, then apply it:
+
+```
+kubectl apply -f examples/nginx.yaml
+```
