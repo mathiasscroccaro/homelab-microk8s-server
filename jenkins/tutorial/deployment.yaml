@@ -1,22 +1,35 @@
+# Persistent Volume Claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+# Deployment Config
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jenkins
-  namespace: devops-tools
+  name: jenkins-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jenkins-server
+      app: jenkins
   template:
     metadata:
       labels:
-        app: jenkins-server
+        app: jenkins
     spec:
+      serviceAccountName: jenkins-admin
       securityContext:
             fsGroup: 1000 
             runAsUser: 1000
-      serviceAccountName: jenkins-admin
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
@@ -54,4 +67,27 @@ spec:
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
-              claimName: jenkins-pvc-hdd
+              claimName: jenkins-pv-claim
+
+# Service Config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-service
+  annotations:
+      prometheus.io/scrape: 'true'
+      prometheus.io/path:   /
+      prometheus.io/port:   '8080'
+spec:
+  selector: 
+    app: jenkins
+  type: NodePort  
+  ports:
+    - name: httpport
+      port: 8080
+      targetPort: 8080
+      nodePort: 32000
+    - name: jnlpport
+      port: 50000
+      targetPort: 50000
