@@ -33,7 +33,7 @@ func ReadServicesFromJson(filePath string) Services {
 	return services
 }
 
-func PortForwardService(service Service, wg *sync.WaitGroup, done chan struct{}) {
+func PortForwardService(service Service, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	commandArray := []string{
@@ -75,18 +75,10 @@ func PortForwardService(service Service, wg *sync.WaitGroup, done chan struct{})
 			err,
 		)
 	}
-
-	select {
-	case <-done:
-		cmd.Process.Signal(os.Kill)
-	default:
-	}
 }
 
 func PortForwardServices(services Services) {
 	var wg sync.WaitGroup
-
-	done := make(chan struct{})
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
@@ -94,12 +86,11 @@ func PortForwardServices(services Services) {
 	go func() {
 		sig := <-signals
 		fmt.Printf("Received signal %v, stopping...\n", sig)
-		close(done)
 	}()
 
 	for _, service := range services.Services {
 		wg.Add(1)
-		go PortForwardService(service, &wg, done)
+		go PortForwardService(service, &wg)
 	}
 
 	wg.Wait()
