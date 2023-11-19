@@ -2,12 +2,8 @@
 
 ## Install duck dns
 
-1. Get your token in the Duck DNS website
-2. Use the command bellow replacing the value of the <YOUR_TOKEN>
-
-```
-TOKEN=<YOUR_TOKEN> envsubst < ./duck_dns/duck.sh > ./duck_dns/duck.sh
-```
+1. Get your token in the Duck DNS website;
+2. Change the INTERFACE and TOKEN according to your network configuration;
 3. Copy the folder `./duck_dns` to the folder `/opt` of the host server
 ```
 sudo cp -r ./duckdns /opt
