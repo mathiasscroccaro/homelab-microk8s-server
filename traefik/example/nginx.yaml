@@ -1,0 +1,26 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: nginx-example
+spec:
+  stripPrefix:
+    prefixes:
+      - /nginx
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nginx
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`mathias-dev.duckdns.org`) && Path(`/nginx`)
+      kind: Rule
+      services:
+        - name: nginx-test-registry
+          port: 8000
+      middlewares:
+        - name: nginx-example
