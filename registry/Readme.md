@@ -37,3 +37,5 @@ You can find an example in the folder `./examples`.
 ```
 kubectl apply -f examples/nginx.yaml
 ```
+
+3. Run `kubectl port-forward svc/nginx-test-registry 9999:8000` and access the web browser at http://localhost:9999
